@@ -25,39 +25,40 @@ if uploaded_file is not None:
         # Select column for coloring
         color_col = st.selectbox("Select column for coloring points", df.columns)
 
-        if pca_cols:
-            # Handle missing values by dropping rows with NaN in selected columns
-            df_pca = df.dropna(subset=pca_cols)
-            if df_pca.empty:
-                st.error("No valid data after removing missing values.")
+        # Plot controls
+        title = st.text_input("Plot Title", "PCA Plot")
+        xlabel = st.text_input("X-axis Label", "PC1")
+        ylabel = st.text_input("Y-axis Label", "PC2")
+
+        if st.button("Generate PCA Plot"):
+            if pca_cols:
+                # Handle missing values by dropping rows with NaN in selected columns
+                df_pca = df.dropna(subset=pca_cols)
+                if df_pca.empty:
+                    st.error("No valid data after removing missing values.")
+                else:
+                    X = df_pca[pca_cols]
+                    scaler = StandardScaler()
+                    X_scaled = scaler.fit_transform(X)
+
+                    pca = PCA(n_components=2)
+                    pcs = pca.fit_transform(X_scaled)
+
+                    pc_df = pd.DataFrame(pcs, columns=['PC1', 'PC2'], index=df_pca.index)
+                    pc_df[color_col] = df_pca[color_col]
+
+                    # Variance explained
+                    var_explained = pca.explained_variance_ratio_ * 100
+                    st.write(f"**Variance Explained:** PC1: {var_explained[0]:.2f}%, PC2: {var_explained[1]:.2f}%")
+
+                    # Generate plot
+                    fig, ax = plt.subplots(figsize=(8, 6))
+                    sns.scatterplot(data=pc_df, x='PC1', y='PC2', hue=color_col, ax=ax, palette='viridis' if pc_df[color_col].dtype == 'object' else None)
+                    ax.set_title(title)
+                    ax.set_xlabel(xlabel)
+                    ax.set_ylabel(ylabel)
+                    st.pyplot(fig)
             else:
-                X = df_pca[pca_cols]
-                scaler = StandardScaler()
-                X_scaled = scaler.fit_transform(X)
-
-                pca = PCA(n_components=2)
-                pcs = pca.fit_transform(X_scaled)
-
-                pc_df = pd.DataFrame(pcs, columns=['PC1', 'PC2'], index=df_pca.index)
-                pc_df[color_col] = df_pca[color_col]
-
-                # Variance explained
-                var_explained = pca.explained_variance_ratio_ * 100
-                st.write(f"**Variance Explained:** PC1: {var_explained[0]:.2f}%, PC2: {var_explained[1]:.2f}%")
-
-                # Plot controls
-                title = st.text_input("Plot Title", "PCA Plot")
-                xlabel = st.text_input("X-axis Label", "PC1")
-                ylabel = st.text_input("Y-axis Label", "PC2")
-
-                # Generate plot
-                fig, ax = plt.subplots(figsize=(8, 6))
-                sns.scatterplot(data=pc_df, x='PC1', y='PC2', hue=color_col, ax=ax, palette='viridis' if pc_df[color_col].dtype == 'object' else None)
-                ax.set_title(title)
-                ax.set_xlabel(xlabel)
-                ax.set_ylabel(ylabel)
-                st.pyplot(fig)
-        else:
-            st.warning("Please select at least one column for PCA.")
+                st.warning("Please select at least one column for PCA.")
 else:
     st.info("Please upload a CSV file to get started.")
