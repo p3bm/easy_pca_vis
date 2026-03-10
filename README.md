@@ -1,3 +1,49 @@
-# easy_pca_vis
+# PCA Visualization App
 
-A simple Streamlit app that can be used to create 2-component PCA maps from a loaded .csv file dataset. Data can be filtered and/or colour-coded by column.
+A simple Streamlit app for creating PCA visualizations from CSV data.
+
+## Features
+
+- Upload a CSV file
+- Select columns for PCA analysis
+- Visualize the first two principal components
+- Color code points based on a selected column
+- Display percentage variance explained by the first two components
+- Customize plot title and axis labels
+
+## Installation
+
+1. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+1. Run the app:
+   ```
+   streamlit run easy_pca_vis.py
+   ```
+
+2. Open the provided URL in your browser (usually http://localhost:8501)
+
+3. Upload your CSV file
+
+4. Select the columns to include in the PCA
+
+5. Choose a column for coloring the points
+
+6. Customize the plot title and labels if desired
+
+7. View the PCA plot and variance explained
+
+## Requirements
+
+- Python 3.7+
+- The dependencies listed in requirements.txt
+
+## Troubleshooting
+
+- Ensure your CSV file has numeric columns for PCA
+- Handle missing values appropriately (the app drops rows with NaN in selected PCA columns)
+- For coloring, both categorical and numeric columns are supported
